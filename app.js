@@ -29,13 +29,17 @@ app.configure('production', function () {
 
 // Model "source"
 
+var tgs = ["#server","#workstation","#Printer","#public","#private","#Floor1","#Floor2","#Floor3"];
 var t = []; //test SOURCE data array
 
 for (var i=0;i<100;i++) {
+    var it1 = Math.floor(Math.random() * 3); //generate random tags
+    var it2 = it1 + 1 + Math.floor(Math.random() * 3);
+
   t[i] = {_id:'idee'+i,ip:"192.168.1."+i, name:"name_"+i,domain:"domain_"+i,username:"username_"+i,password:"password_"+i,
     addDate:new Date(new Date(). getTime() + 86400000*i), // ml seconds in one day
     updateDate: new Date((new Date(new Date(). getTime() + 86400000*i)).getTime()+86400000*i/2),
-    tags:"tag_"+i+"\r\n"+"tag_"+(i+2)
+    tags:[tgs[it1],tgs[it2]]
   };
 }
 
@@ -53,11 +57,36 @@ function copy(from,to) {
 
 // Routes
 
+
+//loads uniq tags
+app.get('/tags', function (req, res, next) {
+  var arr = []; var uniq = {};
+  t.forEach(function (val,ind) {
+    val.tags.forEach(function(v,i){
+      if (!uniq[v])
+      {
+        uniq[v]= v;
+        arr.push(v);
+      }
+    });
+  });
+  res.json(arr);
+});
+
+//loads uniq ips
+app.get('/ips', function (req, res, next) {
+  var arr = [];
+  t.forEach(function (val,ind) {
+    arr.push(val["ip"]);
+  });
+  res.json(arr);
+});
+
 //loads all with pagination and filtering
 app.get('/source', function (req, res, next) {
 
-  var page = new Number(req.query.page);
-  var perPage = new Number(req.query.perPage);
+  var page = Number(req.query.page);
+  var perPage = Number(req.query.perPage);
   var filterName = req.query.filterName.toString();
   var filterIP = req.query.filterIP.toString();
   var filterTags = req.query.filterTags.toString();
@@ -76,10 +105,11 @@ app.get('/source', function (req, res, next) {
         result = val["name"].indexOf(filterName)>-1;
       if (result && (filterIP.length > 0))
         result = val["ip"].indexOf(filterIP)>-1;
-      if (result && (filterTags.length > 0))
-        result = val["tags"].indexOf(filterTags)>-1;
+      if (result && (filterTags.length > 0)) {
+        result = val["tags"].join(" ").indexOf(filterTags) > -1;
+      }
       if (result) tt.push(val);
-    })
+    });
     console.log("tt= "+tt.length);
   }
 
@@ -110,7 +140,7 @@ app.get('/source/:id', function (req, res, next) {
 app.post('/source', function (req, res, next) {
   console.log("post source : " + req.body.content);
 
-  var source = new Object();
+  var source = {};
   copy(req.body,source);
   source._id = 'idee'+t.length;
   t.push (source);

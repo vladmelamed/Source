@@ -25,12 +25,26 @@ var Source = Backbone.Model.extend({
     }
 });
 
-//Backbone.PagedCollection
+
+//ipsCollection
+var ipList ;
+$.get('/ips', {}, function(result){
+    ipList = result;
+});
+
+//tagsCollection
+var tagsList ;
+$.get('/tags', {}, function(result){
+    tagsList = result;
+});
+
+
+//PagedCollection
 var SourceList = Backbone.Collection.extend({
 
     initialize: function() {
         //_.bindAll(this, 'parse', 'url', 'pageInfo', 'nextPage', 'previousPage');
-        _.bindAll(this, 'url', 'pageInfo', 'parse')
+        _.bindAll(this, 'url', 'pageInfo', 'parse');
         this.page = 1;
         typeof(this.perPage) != 'undefined' || (this.perPage = 25);
         typeof(this.filterIP) != 'undefined' || (this.filterIP = "");

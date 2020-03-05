@@ -29,7 +29,7 @@
 
     initialize: function() {
       //_.bindAll(this, 'parse', 'url', 'pageInfo', 'nextPage', 'previousPage');
-      _.bindAll(this, 'url', 'pageInfo', 'parse')
+      _.bindAll(this, 'url', 'pageInfo', 'parse');
       this.page = 1;
       typeof(this.perPage) != 'undefined' || (this.perPage = 25);
       typeof(this.filterIP) != 'undefined' || (this.filterIP = "");
@@ -125,7 +125,14 @@
     initialize: function () {
       _.bindAll(this);
 
-      this.$ip = $("#editForm [name='ip']");
+        var self = this;
+        self.ipList = [];
+        $.get('/ips', {}, function(result){
+            self.ipList = result;
+        });
+        this.myIP = "";
+
+        this.$ip = $("#editForm [name='ip']");
       this.$ip.mask('099.099.099.099');
       this.$name = $("#editForm [name='name']");
       this.$domain = $("#editForm [name='domain']");
@@ -138,6 +145,7 @@
     },
     render: function () {
       this.$ip.val(this.model.get("ip"));
+        this.myIP = this.model.get("ip"); // for edits
       this.$name.val(this.model.get("name"));
       this.$domain.val(this.model.get("domain"));
       this.$username.val(this.model.get("username"));
@@ -151,11 +159,18 @@
     onSave: function () {
       var _this = this;
       if (this.$ip.val()=="" || this.$name.val()=="") {
-          alert("Name and IP address can't be empty")
+          alert("Name and IP address can't be empty");
           return;
       }
+      if (!(this.myIP==this.$ip.val())) {  //new ip
+          var iip = this.$ip.val().trim();
+          if (this.ipList.indexOf(iip)>-1){
+              alert("IP address should be unique. You entered the existing address.");
+              return;
+          }
+      }
      if (this.$password.val()=="" || this.$password1.val()=="" || (!(this.$password.val() == this.$password1.val()))) {
-            alert("Please retype the password second time")
+            alert("Please retype the password second time");
             return;
         }
       this.model.save(
