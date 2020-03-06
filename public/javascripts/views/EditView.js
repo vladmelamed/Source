@@ -105,6 +105,10 @@ var EditView = Backbone.View.extend({
             }
         ).done(function () {
             _this.collection.add(_this.model, {merge: true});
+            $.get('/tags', {}, function(result){  //refreshing list of tags
+                _this.tagsList = result;
+            });
+
         });
         this.hideView();
     },
