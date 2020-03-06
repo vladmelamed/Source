@@ -105,7 +105,7 @@ var EditView = Backbone.View.extend({
             }
         ).done(function () {
             _this.collection.add(_this.model, {merge: true});
-            $.get('/tags', {}, function(result){  //refreshing list of tags
+            $.get('/tags', {}, function(result){  //refreshing list of tags from server
                 _this.tagsList = result;
             });
 

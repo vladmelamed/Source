@@ -27,16 +27,22 @@ app.configure('production', function () {
   app.use(express.errorHandler());
 });
 
-// Model "source"
 
+// in memory Model "source"
 var tgs = ["#server","#workstation","#Printer","#public","#private","#Floor1","#Floor2","#Floor3"];
+var names = ["office","conference room","kitchen","IT room","server room","common area","webinar","Small meeting room"];
 var t = []; //test SOURCE data array
 
 for (var i=0;i<100;i++) {
     var it1 = Math.floor(Math.random() * 3); //generate random tags
     var it2 = it1 + 1 + Math.floor(Math.random() * 3);
+    var it3 = Math.floor(Math.random() * 9);
 
-  t[i] = {_id:'idee'+i,ip:"192.168.1."+i, name:"name_"+i,domain:"domain_"+i,username:"username_"+i,password:"password_"+i,
+  t[i] = {_id:'idee'+i,ip:"192.168.1."+i,
+    name:names[it3],
+    domain:"source.test"+i+".project",
+    username:"username_"+i,
+    password:"password_"+i,
     addDate:new Date(new Date(). getTime() - 86400000*(i*2)), // ml seconds in one day
     updateDate: new Date(new Date(). getTime() - 86400000*i),
     tags:[tgs[it1],tgs[it2]]

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Backbone Source Application</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Backbone Source Application">
+    <meta name="author" content="Vladimir Melamed">
+
+    <link href="../lib/css/bootstrap.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 90px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
+    <link href="../lib/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="../lib/css/tags.css" rel="stylesheet">
+
+    <script src="../lib/js/jquery-1.9.1.js"></script>
+    <script src="../lib/js/json2.js"></script>
+    <script src="../lib/js/underscore.js"></script>
+    <script src="../lib/js/backbone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
+    <script src="https://www.chaijs.com/chai.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a href="/app" class="brand">Source UNIT Test Application</a>
+            <a onclick="ServerTagsList()" class="create btn btn-primary">Run tests</a>
+        </div>
+    </div>
+</div>
+
+<div id="main" class="container">
+
+    <div class="row-fluid">
+
+        <ul id="resultsList">
+
+        </ul>
+
+    </div>
+
+    <script>
+
+        function addMessage(v) {
+            $("#resultsList").append("<li>"+v+"</li>");
+        }
+        function startTest(name) {
+            addMessage("starting test :"+ name+" ...");
+            return new Date().getTime();
+        }
+
+        function finishTest(mess,startTime) {
+            addMessage(mess + " in "+((new Date().getTime())-startTime)+" ms",)
+        }
+
+        function ServerTagsList() {
+            $("#resultsList").empty();
+            var start = startTest (" Retrieving uniq tags list from server ");
+            $.get('/tags', function(data){
+                finishTest("Got "+data.length+" records ",start);
+            }).fail(function(e) {
+                finishTest("Error "+e.toString()+" ",start);
+            });
+        }
+
+
+    </script>
+
+
+</div>
+
+
+
+</body>
+</html>
