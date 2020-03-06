@@ -4,6 +4,7 @@ var FilterView = Backbone.View.extend({
         _.bindAll(this, 'clear', 'render');
         this.collection.bind('refresh', this.render);
         this.listenTo(this.collection, 'reset', this.render);
+
     },
     events: {
         'click a.clear': 'clear',

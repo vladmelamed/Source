@@ -26,17 +26,9 @@ var Source = Backbone.Model.extend({
 });
 
 
-//ipsCollection
-var ipList ;
-$.get('/ips', {}, function(result){
-    ipList = result;
-});
 
-//tagsCollection
-var tagsList ;
-$.get('/tags', {}, function(result){
-    tagsList = result;
-});
+
+
 
 
 //PagedCollection

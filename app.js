@@ -37,8 +37,8 @@ for (var i=0;i<100;i++) {
     var it2 = it1 + 1 + Math.floor(Math.random() * 3);
 
   t[i] = {_id:'idee'+i,ip:"192.168.1."+i, name:"name_"+i,domain:"domain_"+i,username:"username_"+i,password:"password_"+i,
-    addDate:new Date(new Date(). getTime() + 86400000*i), // ml seconds in one day
-    updateDate: new Date((new Date(new Date(). getTime() + 86400000*i)).getTime()+86400000*i/2),
+    addDate:new Date(new Date(). getTime() - 86400000*(i*2)), // ml seconds in one day
+    updateDate: new Date(new Date(). getTime() - 86400000*i),
     tags:[tgs[it1],tgs[it2]]
   };
 }

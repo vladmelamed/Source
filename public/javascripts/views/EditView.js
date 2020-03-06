@@ -3,18 +3,24 @@
 var EditView = Backbone.View.extend({
     events: {
         "click #saveBtn": "onSave",
-        "click #cancelBtn": "hideView"
+        "click #cancelBtn": "hideView",
+        "click #saveTag": "OnSaveTag",
     },
     initialize: function () {
         _.bindAll(this);
 
         var self = this;
+        //unieq ips to check input against
         self.ipList = [];
         $.get('/ips', {}, function(result){
             self.ipList = result;
         });
         this.myIP = "";
-
+        //tagsCollection to recomend for autocomplete
+        self.tagsList = [] ;
+        $.get('/tags', {}, function(result){
+            self.tagsList = result;
+        });
 
         this.$ip = $("#editForm [name='ip']");
         this.$ip.mask('099.099.099.099');
@@ -25,22 +31,46 @@ var EditView = Backbone.View.extend({
         this.$password1 = $("#editForm [name='password1']");
         this.$addDate = $("#editForm [name='addDate']");
         this.$updateDate = $("#editForm [name='updateDate']");
-        this.$tags = $("#editForm [name='tags']");
+        this.$tags = $("#tagslist");
+        this.$inputTag = $("#inputTag");
     },
     render: function () {
+        var self = this;
         this.$ip.val(this.model.get("ip"));
         this.myIP = this.model.get("ip"); // for edits
         this.$name.val(this.model.get("name"));
         this.$domain.val(this.model.get("domain"));
         this.$username.val(this.model.get("username"));
         this.$password.val(this.model.get("password"));
-        this.$addDate.val(this.model.get("addDate").toLocaleDateString());
-        this.$updateDate.val(this.model.get("updateDate").toLocaleDateString());
-        this.$tags.val(this.model.get("tags"));
+        this.$addDate.val(new Date(this.model.get("addDate")).toLocaleDateString());
+        this.$updateDate.val(new Date(this.model.get("updateDate")).toLocaleDateString());
+        this.$tags.empty();
+        var arr = this.model.get("tags");
+        arr.forEach(function(v,i){
+            self.$tags.append("<li data='"+v+"'>"+v+"<span onclick='this.parentElement.parentElement.removeChild(this.parentElement)' class=\"close\">x</span></li>");
+        });
         this.$el.show();
+        autocomplete(document.getElementById("inputTag"), self.tagsList);
         window.scrollTo(0,0);
     },
+    OnSaveTag:function () {
+        if (this.$inputTag.val().length<2) {
+            alert("The tag is too small!");
+            return;
+        }
+        var Tags = [];
+        var v = this.$inputTag.val().toLowerCase();
+        this.$tags.find("li").each(function(){Tags.push($(this).attr("data"));});
+        if (Tags.indexOf(v)>-1) {
+            alert("You already have such tag!");
+            return;
+        }
+        this.$tags.append("<li data='"+v+"'>"+v+"<span onclick='this.parentElement.parentElement.removeChild(this.parentElement)' class=\"close\">x</span></li>");
+        this.$inputTag.val("");
+    },
     onSave: function () {
+
+        //validations
         var _this = this;
         if (this.$ip.val().trim()=="" || this.$name.val().trim()=="") {
             alert("Name and IP address can't be empty");
@@ -58,6 +88,11 @@ var EditView = Backbone.View.extend({
             alert("Please retype the password second time");
             return;
         }
+
+        //collecting tags from UI
+        var newsTags = [];
+        this.$tags.find("li").each(function(){newsTags.push($(this).attr("data"));});
+
         this.model.save(
             {
                 ip:this.$ip.val(),
@@ -66,7 +101,7 @@ var EditView = Backbone.View.extend({
                 username:this.$username.val(),
                 password:this.$password.val(),
                 updateDate: new Date(),  //last update data
-                tags:this.$tags.val()
+                tags:newsTags // new tags
             }
         ).done(function () {
             _this.collection.add(_this.model, {merge: true});

@@ -14,7 +14,14 @@
     }
   </style>
   <link href="../lib/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../lib/css/tags.css" rel="stylesheet">
 
+    <script src="../lib/js/jquery-1.9.1.js"></script>
+    <script src="../lib/js/json2.js"></script>
+    <script src="../lib/js/underscore.js"></script>
+    <script src="../lib/js/backbone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
+    <script src="../lib/js/auto.js"></script>
 
 </head>
 
@@ -40,7 +47,7 @@
 
 
 
-  <form id="editForm" class="form form-horizontal" style="display: none;">
+  <form id="editForm" autocomplete="off" class="form form-horizontal" style="display: none;">
 
       <label >IP address</label><input id="ip" type="text" name="ip" class="input-block-level ip_address" placeholder="Ip" />
       <label>Name of source</label><input type="text" name="name" class="input-block-level" placeholder="Name"/>
@@ -50,7 +57,12 @@
       <label>Type the password second time</label><input type="password" name="password1" class="input-block-level" placeholder="Password"/>
       <label>Date of adding</label> <input type="text" disabled name="addDate" class="input-block-level" placeholder="AddDate"/>
       <label>Date of the last update</label><input type="text" disabled name="updateDate" class="input-block-level" placeholder="UpdateDate"/>
-      <label>Tags</label><textarea rows="5" name="tags" class="input-block-level" placeholder="Tags"></textarea>
+      <label>Tags</label>
+      <div class="autocomplete" style="width:300px;">
+      <input id="inputTag" type="text" name="myTag" placeholder="Enter Tag"><a id="saveTag" class="btn btn-primary">Add Tag</a><br>
+      </div>
+      <ul id="tagslist">
+      </ul>
 
     <div class="btn-group">
       <a id="saveBtn" class="btn btn-primary">Save</a>
@@ -76,6 +88,8 @@
 
 
 
+
+
 </div>
 
 <script type="text/template" id="tmpl-filterview">
@@ -83,10 +97,13 @@
     <input id="ipFilter" type="text" value="<%= filterIP%>" class="form-control input-mini" placeholder="IP " />
     <input type="text" id="nameFilter" value="<%= filterName%>" class="form-control input-mini" placeholder="Name "/>
     <input type="text" id="tagsFilter" value="<%= filterTags%>" class="form-control input-mini" placeholder="tags"/>
+    <a class="filter btn btn-primary">Filter</a>
     <% if (filterIP.trim().length>0 || (filterName.trim().length>0) || (filterTags.trim().length>0))
      { %>
     <a class="clear btn btn-primary">Clear</a>
     <% } %>
+
+
 </script>
 
 <script type="text/template" id="tmpl-pageview">
@@ -126,17 +143,21 @@
         d.getFullYear()
         ];
         print(fragments.join('/')); %></p>
-    <p><label class="alert-info">Tags:</label> <%= tags.join("<br>") %></p>
+    <p><label class="alert-info">Tags:</label>
+    <ul>
+        <%
+           _.each(tags, function(str){ %>
+        <li> <%=str%> </li>
+        <%
+          });
+        %>
+    </ul>
+    </p>
 
              <p>       <input class="edit btn btn-primary" type="button" value="edit"/> <input class="delete btn btn-primary" type="button" value="delete"/>
              </p>
 </script>
 
-<script src="../lib/js/jquery-1.9.1.js"></script>
-<script src="../lib/js/json2.js"></script>
-<script src="../lib/js/underscore.js"></script>
-<script src="../lib/js/backbone.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
 
 <script src="../javascripts/models/model.js"></script>
 <script src="../javascripts/views/EditView.js"></script>
@@ -146,6 +167,7 @@
 <script src="../javascripts/views/PaginatedView.js"></script>
 <script src="../javascripts/views/HeaderView.js"></script>
 <script src="../javascripts/controllers/router.js"></script>
+
 
 </body>
 </html>
